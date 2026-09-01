@@ -106,6 +106,12 @@ h1 {
   gap: 12px;
 }
 
+#version {
+  margin: 0;
+  font-size: 0.75rem;
+  color: rgba(240, 244, 248, 0.4);
+}
+
 #reset,
 #fullscreen {
   padding: 10px 24px;

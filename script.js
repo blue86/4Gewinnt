@@ -70,22 +70,23 @@ function dropPiece(row, col, player) {
   piece.style.width = `${cellSize}px`;
   piece.style.height = `${cellSize}px`;
   piece.style.left = `${col * step}px`;
-
-  const startTop = -step;
-  const targetTop = row * step;
-  piece.style.top = `${startTop}px`;
+  // Final resting position is set immediately; the fall itself is done with a
+  // GPU-composited transform so it stays smooth and visible on mobile Safari,
+  // instead of animating "top" which forces a layout reflow every frame.
+  piece.style.top = `${row * step}px`;
   piecesLayer.appendChild(piece);
 
   const fallDistance = row + 1;
+  const startOffset = -fallDistance * step;
   const duration = 300 + fallDistance * 60;
 
   const animation = piece.animate(
-    [{ top: `${startTop}px` }, { top: `${targetTop}px` }],
+    [{ transform: `translateY(${startOffset}px)` }, { transform: "translateY(0)" }],
     { duration, easing: "cubic-bezier(0.55, 0.06, 0.9, 0.3)", fill: "forwards" }
   );
 
   animation.onfinish = () => {
-    piece.style.top = `${targetTop}px`;
+    animation.cancel();
     piece.classList.add("landed");
   };
 }
