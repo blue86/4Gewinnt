@@ -49,6 +49,9 @@ h1 {
   padding: var(--gap);
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  /* Hide pieces before they cross the top edge, so they look like they drop
+     through the board's own slots instead of flying in from above the page. */
+  overflow: hidden;
 }
 
 .cell {
