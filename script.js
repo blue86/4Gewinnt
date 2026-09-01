@@ -4,10 +4,12 @@ const ROWS = 6;
 const boardEl = document.getElementById("board");
 const statusEl = document.getElementById("status");
 const resetBtn = document.getElementById("reset");
+const fullscreenBtn = document.getElementById("fullscreen");
 
 let grid = [];
 let currentPlayer = "yellow";
 let gameOver = false;
+let piecesLayer = null;
 
 function createBoard() {
   grid = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
@@ -22,6 +24,10 @@ function createBoard() {
       boardEl.appendChild(cell);
     }
   }
+
+  piecesLayer = document.createElement("div");
+  piecesLayer.id = "pieces";
+  boardEl.appendChild(piecesLayer);
 }
 
 function cellAt(row, col) {
@@ -35,9 +41,7 @@ function handleClick(col) {
   if (row === -1) return;
 
   grid[row][col] = currentPlayer;
-  const disc = document.createElement("div");
-  disc.className = `disc ${currentPlayer}`;
-  cellAt(row, col).appendChild(disc);
+  dropPiece(row, col, currentPlayer);
 
   if (checkWin(row, col)) {
     statusEl.textContent = `${label(currentPlayer)} gewinnt!`;
@@ -53,6 +57,37 @@ function handleClick(col) {
 
   currentPlayer = currentPlayer === "yellow" ? "red" : "yellow";
   statusEl.textContent = `${label(currentPlayer)} ist am Zug`;
+}
+
+function dropPiece(row, col, player) {
+  const styles = getComputedStyle(document.documentElement);
+  const cellSize = parseFloat(styles.getPropertyValue("--cell"));
+  const gap = parseFloat(styles.getPropertyValue("--gap"));
+  const step = cellSize + gap;
+
+  const piece = document.createElement("div");
+  piece.className = `piece ${player}`;
+  piece.style.width = `${cellSize}px`;
+  piece.style.height = `${cellSize}px`;
+  piece.style.left = `${col * step}px`;
+
+  const startTop = -step;
+  const targetTop = row * step;
+  piece.style.top = `${startTop}px`;
+  piecesLayer.appendChild(piece);
+
+  const fallDistance = row + 1;
+  const duration = 300 + fallDistance * 60;
+
+  const animation = piece.animate(
+    [{ top: `${startTop}px` }, { top: `${targetTop}px` }],
+    { duration, easing: "cubic-bezier(0.55, 0.06, 0.9, 0.3)", fill: "forwards" }
+  );
+
+  animation.onfinish = () => {
+    piece.style.top = `${targetTop}px`;
+    piece.classList.add("landed");
+  };
 }
 
 function lowestEmptyRow(col) {
@@ -109,5 +144,34 @@ function resetGame() {
 }
 
 resetBtn.addEventListener("click", resetGame);
+
+function isFullscreenSupported() {
+  return !!(document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen);
+}
+
+function isCurrentlyFullscreen() {
+  return !!(document.fullscreenElement || document.webkitFullscreenElement);
+}
+
+function toggleFullscreen() {
+  if (!isCurrentlyFullscreen()) {
+    const el = document.documentElement;
+    (el.requestFullscreen || el.webkitRequestFullscreen)?.call(el);
+  } else {
+    (document.exitFullscreen || document.webkitExitFullscreen)?.call(document);
+  }
+}
+
+function updateFullscreenLabel() {
+  fullscreenBtn.textContent = isCurrentlyFullscreen() ? "⤢ Vollbild beenden" : "⛶ Vollbild";
+}
+
+if (isFullscreenSupported()) {
+  fullscreenBtn.addEventListener("click", toggleFullscreen);
+  document.addEventListener("fullscreenchange", updateFullscreenLabel);
+  document.addEventListener("webkitfullscreenchange", updateFullscreenLabel);
+} else {
+  fullscreenBtn.style.display = "none";
+}
 
 createBoard();
