@@ -63,7 +63,12 @@ h1 {
 /* Overlay that pieces fall through, on top of the holes, clicks pass through to them */
 #pieces {
   position: absolute;
-  inset: 0;
+  /* Absolutely positioned children ignore the parent's padding, so offset
+     by --gap manually to line up with where the grid cells actually start. */
+  top: var(--gap);
+  left: var(--gap);
+  right: var(--gap);
+  bottom: var(--gap);
   pointer-events: none;
 }
 
