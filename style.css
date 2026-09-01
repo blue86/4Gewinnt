@@ -82,6 +82,33 @@ h1 {
   transform-origin: bottom center;
 }
 
+/* Blue face plate punched with round windows, painted over the pieces so a
+   falling disc is hidden behind it and only visible while passing a hole -
+   like the real game, where the discs drop through channels behind the front. */
+#face {
+  position: absolute;
+  top: var(--gap);
+  left: var(--gap);
+  right: var(--gap);
+  bottom: var(--gap);
+  pointer-events: none;
+  background: linear-gradient(160deg, #1565d8, #0d47a1);
+  -webkit-mask-image: radial-gradient(
+    circle at calc(var(--cell) / 2) calc(var(--cell) / 2),
+    transparent calc(var(--cell) / 2 - 1px),
+    black calc(var(--cell) / 2)
+  );
+  mask-image: radial-gradient(
+    circle at calc(var(--cell) / 2) calc(var(--cell) / 2),
+    transparent calc(var(--cell) / 2 - 1px),
+    black calc(var(--cell) / 2)
+  );
+  -webkit-mask-size: calc(var(--cell) + var(--gap)) calc(var(--cell) + var(--gap));
+  mask-size: calc(var(--cell) + var(--gap)) calc(var(--cell) + var(--gap));
+  -webkit-mask-repeat: repeat;
+  mask-repeat: repeat;
+}
+
 .piece.yellow {
   background: radial-gradient(circle at 35% 30%, #fff6b0, #ffd400 60%, #c79a00);
 }

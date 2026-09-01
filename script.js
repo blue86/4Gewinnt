@@ -28,6 +28,10 @@ function createBoard() {
   piecesLayer = document.createElement("div");
   piecesLayer.id = "pieces";
   boardEl.appendChild(piecesLayer);
+
+  const face = document.createElement("div");
+  face.id = "face";
+  boardEl.appendChild(face);
 }
 
 function cellAt(row, col) {
